@@ -39,6 +39,8 @@ export class ApiStack extends Stack {
       },
     });
 
+   
+
     props.jobsTable.grantWriteData(createJobLambda);
     jobsQueue.grantSendMessages(createJobLambda);
 
@@ -58,10 +60,22 @@ export class ApiStack extends Stack {
       new lambdaEventSources.SqsEventSource(jobsQueue)
     );
 
+     const getJobLambda = new NodejsFunction(this, 'GetJobLambda', {
+        entry: path.join(process.cwd(), 'lib/stacks/lambda/get-job/handler.ts'),
+        runtime: lambda.Runtime.NODEJS_20_X,
+        environment: {
+          JOBS_TABLE: props.jobsTable.tableName,
+        },
+      });
+
+    props.jobsTable.grantReadData(getJobLambda);
+
     const api = new apigateway.RestApi(this, 'JobsApi');
 
     const jobs = api.root.addResource('jobs');
     jobs.addMethod('POST', new apigateway.LambdaIntegration(createJobLambda));
+    const jobById = jobs.addResource('{id}');
+    jobById.addMethod('GET', new apigateway.LambdaIntegration(getJobLambda));
 
     new cdk.CfnOutput(this, 'ApiUrl', {
       value: api.url,
