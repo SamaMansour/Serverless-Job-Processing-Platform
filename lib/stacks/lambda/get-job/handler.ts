@@ -31,13 +31,14 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     }
 
     return {
-      statusCode: 200,
-      body: JSON.stringify({
+    statusCode: 200,
+    body: JSON.stringify({
         jobId: result.Item.jobId.S,
         status: result.Item.status.S,
         createdAt: result.Item.createdAt.S,
         type: result.Item.type.S,
-      }),
+        resultKey: result.Item.resultKey?.S || null,
+    }),
     };
   } catch (error) {
     console.error(error);

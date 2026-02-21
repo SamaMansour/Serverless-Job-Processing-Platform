@@ -17,4 +17,6 @@ new ApiStack(app, 'ApiStack', {
     region: process.env.CDK_DEFAULT_REGION,
   },
   jobsTable: dataStack.jobsTable,
+  jobResultsBucket: dataStack.jobResultsBucket,
+
 });
