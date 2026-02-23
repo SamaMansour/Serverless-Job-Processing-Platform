@@ -61,6 +61,7 @@ export class ApiStack extends Stack {
 
     props.jobsTable.grantWriteData(workerLambda);
     jobsQueue.grantSendMessages(createJobLambda);
+    jobsQueue.grantConsumeMessages(workerLambda);
 
     workerLambda.addEventSource(
       new lambdaEventSources.SqsEventSource(jobsQueue)
